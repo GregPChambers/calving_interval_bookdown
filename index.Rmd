@@ -50,7 +50,7 @@ library(stringr)
 library(forcats)
 library(openxlsx)
 library(flextable)
-#library(readxl)
+library(readxl)
 library(english)
 library(arsenal)
 library(tidyr)
@@ -61,6 +61,7 @@ library(tidyr)
 #library(OptimalCutpoints)
 #library(splines)
 library(tidytext)
+library(janitor)
 
 
 # Set thousands separator for inline text
@@ -94,7 +95,25 @@ mixedrank <- function(x) order(gtools::mixedorder(x))
 # Data importation and setup
 
 
-season_19_20 <- read_excel(path = "REPORT2019.xlsx") %>%
+season_19_20 <- read_excel(path = "REPORT2019.xlsx")
+season_20_21 <- read_excel(path = "REPORT2020.xlsx")
+season_21_22 <- read_excel(path = "REPORT2021.xlsx")
+season_22_23 <- read_excel(path = "REPORT2022.xlsx")
+
+alldata <- rbind(season_19_20, season_20_21, season_21_22, season_22_23)
+
+dat <- alldata %>%
+  clean_names() %>%
+  mutate(sid = paste(animal_id, client_id, sep="_")) %>%
+  relocate(sid)
+  
+length(unique(dat$sid))
+length(unique(dat$client_id))
+
+table(dat$sex)
+table(dat$is_active)
+
+
   select(1:7) %>%
   set_colnames(c("date", "region", "farm", "sn", "tag", "age", "se_blood")) %>%
   mutate(sn = as.factor(sn)) %>%
